@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OpenAI Image Model Comparison</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+        .description {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #666;
+        }
+        .input-section {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input, textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        textarea {
+            height: 100px;
+            resize: vertical;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 10px;
+            width: 100%;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .image-gallery {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            margin-top: 30px;
+        }
+        .image-container {
+            width: 32%;
+            margin-bottom: 20px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        .image-header {
+            padding: 15px;
+            background-color: #f9f9f9;
+            border-bottom: 1px solid #eee;
+        }
+        .image-header h3 {
+            margin: 0;
+            color: #333;
+        }
+        .image-wrapper {
+            padding: 15px;
+            position: relative;
+            min-height: 300px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .image-wrapper img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+        }
+        .loading {
+            text-align: center;
+            color: #666;
+        }
+        .progress-info {
+            margin-top: 10px;
+            font-size: 14px;
+            color: #666;
+            text-align: center;
+        }
+        .error-message {
+            color: #d9534f;
+            padding: 10px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <h1>OpenAI Image Model Evolution Comparison</h1>
+    <p class="description">Compare image generation from DALL-E 2, DALL-E 3, and GPT-4 Turbo (gpt-4-vision-1)</p>
+
+    <div class="input-section">
+        <div class="form-group">
+            <label for="apiKey">OpenAI API Key:</label>
+            <input type="password" id="apiKey" placeholder="Enter your OpenAI API key">
+            <p class="progress-info">Your API key is only used for requests and not stored</p>
+        </div>
+        <div class="form-group">
+            <label for="prompt">Image Prompt:</label>
+            <textarea id="prompt" placeholder="Enter a detailed description of the image you want to generate...">A futuristic city with flying cars and tall skyscrapers</textarea>
+        </div>
+        <button id="generateBtn">Generate Images</button>
+    </div>
+
+    <div class="image-gallery">
+        <div class="image-container">
+            <div class="image-header">
+                <h3>DALL-E 2 (2022)</h3>
+            </div>
+            <div class="image-wrapper" id="dalle2Container">
+                <div class="loading">Images will appear here</div>
+            </div>
+            <p class="progress-info">OpenAI's second-generation image model</p>
+        </div>
+        <div class="image-container">
+            <div class="image-header">
+                <h3>DALL-E 3 (2023)</h3>
+            </div>
+            <div class="image-wrapper" id="dalle3Container">
+                <div class="loading">Images will appear here</div>
+            </div>
+            <p class="progress-info">Improved text understanding and visual quality</p>
+        </div>
+        <div class="image-container">
+            <div class="image-header">
+                <h3>GPT-4 Turbo with Image Generation (2024)</h3>
+            </div>
+            <div class="image-wrapper" id="gptImage1Container">
+                <div class="loading">Images will appear here</div>
+            </div>
+            <p class="progress-info">Latest model with enhanced capabilities</p>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const generateBtn = document.getElementById('generateBtn');
+            const apiKeyInput = document.getElementById('apiKey');
+            const promptInput = document.getElementById('prompt');
+            
+            const dalle2Container = document.getElementById('dalle2Container');
+            const dalle3Container = document.getElementById('dalle3Container');
+            const gptImage1Container = document.getElementById('gptImage1Container');
+            
+            generateBtn.addEventListener('click', async function() {
+                const apiKey = apiKeyInput.value.trim();
+                const prompt = promptInput.value.trim();
+                
+                if (!apiKey) {
+                    alert('Please enter your OpenAI API key');
+                    return;
+                }
+                
+                if (!prompt) {
+                    alert('Please enter a prompt for image generation');
+                    return;
+                }
+                
+                // Reset containers
+                dalle2Container.innerHTML = '<div class="loading">Generating image...</div>';
+                dalle3Container.innerHTML = '<div class="loading">Generating image...</div>';
+                gptImage1Container.innerHTML = '<div class="loading">Generating image...</div>';
+                
+                // Generate all images in parallel
+                try {
+                    await Promise.all([
+                        generateDallE2Image(apiKey, prompt),
+                        generateDallE3Image(apiKey, prompt),
+                        generateGPT4Image(apiKey, prompt)
+                    ]);
+                } catch (error) {
+                    console.error('Error generating images:', error);
+                }
+            });
+            
+            async function generateDallE2Image(apiKey, prompt) {
+                try {
+                    const response = await fetch('https://api.openai.com/v1/images/generations', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${apiKey}`
+                        },
+                        body: JSON.stringify({
+                            prompt: prompt,
+                            model: "dall-e-2",
+                            n: 1,
+                            size: "1024x1024"
+                        })
+                    });
+                    
+                    if (!response.ok) {
+                        const errorData = await response.json();
+                        throw new Error(`DALL-E 2 error: ${errorData.error?.message || response.statusText}`);
+                    }
+                    
+                    const data = await response.json();
+                    const imageUrl = data.data[0].url;
+                    
+                    dalle2Container.innerHTML = `<img src="${imageUrl}" alt="DALL-E 2 generated image">`;
+                } catch (error) {
+                    dalle2Container.innerHTML = `<div class="error-message">Error: ${error.message}</div>`;
+                    console.error('DALL-E 2 error:', error);
+                }
+            }
+            
+            async function generateDallE3Image(apiKey, prompt) {
+                try {
+                    const response = await fetch('https://api.openai.com/v1/images/generations', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${apiKey}`
+                        },
+                        body: JSON.stringify({
+                            prompt: prompt,
+                            model: "dall-e-3",
+                            n: 1,
+                            size: "1024x1024"
+                        })
+                    });
+                    
+                    if (!response.ok) {
+                        const errorData = await response.json();
+                        throw new Error(`DALL-E 3 error: ${errorData.error?.message || response.statusText}`);
+                    }
+                    
+                    const data = await response.json();
+                    const imageUrl = data.data[0].url;
+                    
+                    dalle3Container.innerHTML = `<img src="${imageUrl}" alt="DALL-E 3 generated image">`;
+                } catch (error) {
+                    dalle3Container.innerHTML = `<div class="error-message">Error: ${error.message}</div>`;
+                    console.error('DALL-E 3 error:', error);
+                }
+            }
+            
+            async function generateGPT4Image(apiKey, prompt) {
+                try {
+                    const response = await fetch('https://api.openai.com/v1/images/generations', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${apiKey}`
+                        },
+                        body: JSON.stringify({
+                            prompt: prompt,
+                            model: "gpt-image-1",
+                            n: 1,
+                            size: "1024x1024"
+                        })
+                    });
+                    
+                    if (!response.ok) {
+                        const errorData = await response.json();
+                        throw new Error(`GPT-4 Image error: ${errorData.error?.message || response.statusText}`);
+                    }
+                    
+                    const data = await response.json();
+                    
+                    // Handle base64 encoded image for gpt-image-1
+                    if (data.data[0].b64_json) {
+                        const base64Data = data.data[0].b64_json;
+                        const imageUrl = `data:image/png;base64,${base64Data}`;
+                        gptImage1Container.innerHTML = `<img src="${imageUrl}" alt="GPT-4 Vision generated image">`;
+                    } else if (data.data[0].url) {
+                        // Fallback to URL if available
+                        const imageUrl = data.data[0].url;
+                        gptImage1Container.innerHTML = `<img src="${imageUrl}" alt="GPT-4 Vision generated image">`;
+                    } else {
+                        throw new Error("No image data returned");
+                    }
+                } catch (error) {
+                    gptImage1Container.innerHTML = `<div class="error-message">Error: ${error.message}</div>`;
+                    console.error('GPT-4 Image error:', error);
+                }
+            }
+        });
+    </script>
+</body>
+</html>
