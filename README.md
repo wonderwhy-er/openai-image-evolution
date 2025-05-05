@@ -1,4 +1,4 @@
-# OpenAI Image Model Evolution Comparison
+# OpenAI Image Model Evolution Comparison made with Visual Studio Code Agentinc mode and Sonnet 3.7 - pure vibe coding style
 
 This project demonstrates the evolution of OpenAI's image generation capabilities by comparing the outputs of three different models side by side:
 - **DALL-E 2** (2022) - OpenAI's second-generation image model
