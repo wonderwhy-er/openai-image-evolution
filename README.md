@@ -7,7 +7,7 @@ This project demonstrates the evolution of OpenAI's image generation capabilitie
 
 ## Live Demo
 
-View the live demo: [OpenAI Image Generation Evolution](https://YOUR-GITHUB-USERNAME.github.io/openai-image-evolution/)
+View the live demo: [OpenAI Image Generation Evolution](https://wonderwhy-er.github.io/openai-image-evolution/)
 
 ## Features
 
