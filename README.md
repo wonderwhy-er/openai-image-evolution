@@ -1,3 +1,10 @@
+# Made as part of Live Coding Olympics
+[![Watch the video](https://img.youtube.com/vi/xySgNhHz4PI/0.jpg)](https://youtu.be/xySgNhHz4PI)
+
+Full results with links:
+https://docs.google.com/spreadsheets/d/1kgnVU6NZVTwqtUkrNetXTpm0oY7NsYGJn61u6-JMIoI/edit?usp=sharing
+
+
 # OpenAI Image Model Evolution Comparison made with Visual Studio Code Agentinc mode and Sonnet 3.7 - pure vibe coding style
 
 This project demonstrates the evolution of OpenAI's image generation capabilities by comparing the outputs of three different models side by side:
